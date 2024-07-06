@@ -52,3 +52,70 @@ def doc_string_check(fn):
              raise SyntaxError ("docstring must contain few charecter atleast")
         
     return doc_checker
+
+
+def fibonacci_closure():
+    '''
+    This function returns the closure for for generating next fibonacci numbers. 
+    Function take argument for which next fib number to be generated.
+    inedex: 1 2 3 4 5 6 7  8  9 10 ....
+    Series: 0 1 1 2 3 5 8 13 21 34 55 ....
+    Basically Fn = Fn-1 + Fn-2
+    '''
+    fn_0 = 0
+    fn_1 = 1
+    
+    def next_fib(n: int=0)->int:
+        '''
+        Generates the next fionacci number
+        '''
+        if not isinstance(n, int):
+            raise ValueError("Fibonacci series is defined only for integers")
+        
+        if (n < 0):
+            raise ValueError("Fibonacci series is defined only for positive integers")
+
+        nonlocal fn_0
+        nonlocal fn_1
+        # Loop through the index+1 times for which fib to be 
+        # generated
+        for _ in range (n+1):
+            temp_0 = fn_0
+            temp_1 = fn_1
+            fn_0 = temp_1
+            fn_1 = temp_0 + temp_1
+        # Reset the nonlocal variables, so that variables are not 
+        # persistant across function calls
+        fn_0 = 0
+        fn_1 = 1
+        return (temp_0)
+    return next_fib
+
+# Declare a global variable to keep track of function call count
+fn_called = {}
+
+def fun_cnt_closure(fn):
+    '''
+    This function keep counts of how many times a function gets called
+    '''
+    def fn_counter(*args, **kwargs):
+        '''
+        This function keeps count of how many times a function is called
+        '''
+        # Access the global variable
+        global fn_called
+
+        # Fetch the name of function and check if already exists in dictionary
+        # if not create the key in the dictionary and initialize it to zero.
+        if not (fn.__name__ in fn_called.keys()):
+            fn_called[fn.__name__] = 0
+        
+        # Update the count
+        fn_called[fn.__name__] =  fn_called[fn.__name__] + 1
+
+        # Return value, which is not used
+        _ = fn(*args, **kwargs)
+
+        # Return the dictionary
+        return (fn_called)
+    return fn_counter

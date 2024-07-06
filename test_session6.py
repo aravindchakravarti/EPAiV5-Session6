@@ -6,7 +6,7 @@ import inspect
 import re
 import math
 import time
-from session6 import doc_string_check
+from session6 import doc_string_check, fibonacci_closure
 
 
 def test_readme_exists():
@@ -76,3 +76,31 @@ def test_doc_strings_without_letter():
         fn_test = doc_string_check(add_with_num_only_doc)
         fn_test(2,3)
     
+def test_fib_closure_less_than_zero():
+    '''
+    Checks the fibonacci with negative values
+    '''
+    with pytest.raises(ValueError, match=r".*positive integers*"):
+        fn = fibonacci_closure()
+        fn(-1)
+
+def test_fib_closure_with_float():
+    '''
+    Checks if the fibonacci series handles negative numbers
+    '''
+    with pytest.raises(ValueError, match=r".*integers*"):
+        fn = fibonacci_closure()
+        fn(1.1)
+        fn('a')
+
+def test_fib_for_int_values():
+    '''
+    Checks if fibonacci series correctly predicts the next fib 
+    number
+    '''
+    fn = fibonacci_closure()
+    return_val = fn(0)
+    assert return_val == 0, "Fibonacci series function is not working"
+
+    return_val = fn(10)
+    assert return_val == 55, "Fibonacci series function is not working"
