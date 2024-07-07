@@ -2,113 +2,87 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=15331559&assignment_repo_type=AssignmentRepo)
 # epai5session6
 
-# Function Documentation
+# ReadMe
 
-## Overview
-This document provides detailed information on the functions available in this module. Each function is designed to perform specific tasks and includes input validation to ensure correctness and reliability. Below are the functions included in this documentation:
+## Assignment 6 Description
 
-1. `time_it(fn, *args, repetitions= 1, **kwargs)`
-2. `squared_power_list (number, *args, start=0, end=5, **kwargs)`
-3. `polygon_area (length, *args, sides=3, **kwargs)`
-4. `temp_converter (temp, *args, temp_given_in='f', **kwargs)`
-5. `speed_converter (speed, *args, dist='km', time='min', **kwargs)`
+This project/assignment contains a collection of functions that serve various purposes such as checking the presence and length of docstrings, generating Fibonacci numbers, and counting function calls. Below is a detailed description of each function and its usage.
 
-## Function Descriptions
+### Functions
 
-### `time_it(fn, *args, repetitions=1, **kwargs)`
+1.  **doc_string_check**
+    
+    This function is a decorator that checks if the docstring of a given function contains at least 50 words. It raises a `SyntaxError` if the docstring is absent or does not meet the word count requirement.
+    
+    **Parameters:**
+    
+    -   `fn` (function): The function whose docstring is to be checked.
+    
+    **Usage:** 
+    ```{python}
+    @doc_string_check def some_function(): 
+	    """A sufficiently long docstring with more than 50 words.""" 
+	    pass
+	```
+    
+2.  **fibonacci_closure**
+    
+    This function returns a closure that generates the next Fibonacci number based on a given index. The Fibonacci series is generated using the formula: Fn = Fn-1 + Fn-2.
+    
+    **Returns:**
+    
+    -   A closure that generates the next Fibonacci number.
+    
+    **Usage:** 
+    ```{python}
+    fib = fibonacci_closure() 
+    print(fib(5)) 
+    # Output: 5
+    ```
+    
+3.  **fun_called_cnt_closure**
+    
+    This function is a decorator that counts how many times a given function is called. It uses a global dictionary to keep track of the counts.
+    
+    **Parameters:**
+    
+    -   `fn` (function): The function whose call count is to be tracked.
+    
+    **Usage:** 
+    ```{python}
+    @fun_called_cnt_closure 
+    def some_function(): 
+	    pass 
+    
+    some_function() 
+    print(fn_called) 
+    # Output: {'some_function': 1}
+    ```
+4.  **fun_called_cnt_closure_ext_dict**
+    
+    This function is a decorator that counts how many times a given function is called. It uses an external dictionary to keep track of the counts.
+    
+    **Parameters:**
+    
+    -   `fn` (function): The function whose call count is to be tracked.
+    
+    **Usage:** call_dict = {}
+    ```{python}
+    @fun_called_cnt_closure_ext_dict 
+    def some_function(): 
+	    pass
+    
+    some_function(call_dict) 
+	print(call_dict) 
+	# Output: {'some_function': 1}
+    ```
 
-#### Purpose
-The `time_it` function measures the execution time of a given function over a specified number of repetitions.
+### Dependencies
 
-#### Parameters
-- `fn`: The function to be timed.
-- `*args`: Positional arguments to be passed to `fn`.
-- `repetitions`: Number of times to repeat the function execution. Default is 1.
-- `**kwargs`: Keyword arguments to be passed to `fn`.
+This project does not have any external dependencies. It is written in pure Python.
 
-#### Returns
-- `result`: The result of the function `fn`.
-- `execution_time`: The total time taken to execute `fn` over the specified number of repetitions.
+### License
 
-## `squared_power_list`
+This project is licensed under the MIT License.
 
-Returns a list by raising `number` to powers from `start` to `end` (inclusive).
-
-### Parameters
-- `number`: The base number for exponentiation.
-- `*args`: Additional positional arguments (not used in this function).
-- `start`: The starting exponent (default is 0).
-- `end`: The ending exponent (default is 5).
-- `**kwargs`: Additional keyword arguments (not used in this function).
-
-### Returns
-- A list containing `number` raised to the power of each integer in the range `[start, end)`.
-
-### Exceptions
-- Raises `TypeError` if `number` is not provided or not an integer.
-- Raises `ValueError` if `start` or `end` is negative, or if `start` is greater than `end`.
-- Raises `ValueError` if `number` is greater than 10.
-- Raises `TypeError` if more than one positional argument (`*args`) is provided.
-- Raises `TypeError` if any keyword arguments (`**kwargs`) are provided.
-
-## `polygon_area`
-
-Returns the area of a regular polygon with a specified number of sides (3 to 6 inclusive).
-
-### Parameters
-- `length`: The length of each side of the polygon.
-- `*args`: Additional positional arguments (not used in this function).
-- `sides`: The number of sides of the polygon (default is 3).
-- `**kwargs`: Additional keyword arguments (not used in this function).
-
-### Returns
-- The area of the regular polygon.
-
-### Exceptions
-- Raises `TypeError` if `length` is not provided or is not an integer or float.
-- Raises `ValueError` if `sides` is not an integer or if it is less than 3.
-- Raises `ValueError` if `length` is negative.
-- Raises `TypeError` if more than one positional argument (`*args`) is provided.
-- Raises `TypeError` if any keyword arguments (`**kwargs`) are provided.
-
-## `temp_converter`
-
-Converts temperature between Celsius ('C' or 'c') and Fahrenheit ('F' or 'f').
-
-### Parameters
-- `temp`: The temperature value to be converted.
-- `*args`: Additional positional arguments (not used in this function).
-- `temp_given_in`: The scale of the input temperature ('C' for Celsius, 'F' for Fahrenheit). Default is 'F'.
-- `**kwargs`: Additional keyword arguments (not used in this function).
-
-### Returns
-- The converted temperature value.
-
-### Exceptions
-- Raises `TypeError` if `temp` is not provided or is not a float or integer.
-- Raises `ValueError` if `temp_given_in` is not a string or if it is not one of ['C', 'c', 'F', 'f'].
-- Raises `ValueError` if the temperature (`temp`) is below absolute zero for the given scale.
-- Raises `TypeError` if more than one positional argument (`*args`) is provided.
-- Raises `TypeError` if any keyword arguments (`**kwargs`) are provided.
-
-## `speed_converter`
-
-Converts speed from kilometers per hour (km/h) to various units of distance (`dist`) and time (`time`).
-
-### Parameters
-- `speed`: The speed value to be converted (in km/h).
-- `*args`: Additional positional arguments (not used in this function).
-- `dist`: The unit of distance to convert to (`km`, `m`, `ft`, `yrd`). Default is `km`.
-- `time`: The unit of time to convert to (`ms`, `s`, `min`, `hr`, `day`). Default is `min`.
-- `**kwargs`: Additional keyword arguments (not used in this function).
-
-### Returns
-- The converted speed value as an integer.
-
-### Exceptions
-- Raises `TypeError` if more than one positional argument (`*args`) is provided.
-- Raises `TypeError` if more than two keyword arguments (`**kwargs`) are provided.
-- Raises `TypeError` if `speed` is not a float or integer.
-- Raises `TypeError` if `dist` or `time` are not strings.
-- Raises `ValueError` if `speed` is negative or exceeds the speed of light (300,000 km/h).
-- Raises `ValueError` if `dist` or `time` are not valid units ('km', 'm', 'ft', 'yrd' for `dist`; 'ms', 's', 'min', 'hr', 'day' for `time`).
+Feel free to modify and use the code as per your requirements

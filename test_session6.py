@@ -6,14 +6,88 @@ import inspect
 import re
 import math
 import time
-from session6 import doc_string_check, fibonacci_closure
+import session6
+from session6 import doc_string_check, fibonacci_closure, fun_called_cnt_closure
 
+'''
+    There is no separate assignment link. You need to write the code + test code, test your actions, and then 
+    submit the link on the assignment page. 
+
+1.  Write a closure that takes a function and then check whether the function passed has a docstring with 
+    more than 50 characters. 50 is stored as a free variable (+ 4 tests) - 200
+
+2.  Write a closure that gives you the next Fibonacci number (+ 2 tests) - 100
+
+3.  We wrote a closure that counts how many times a function was called. Write a new one that can keep 
+    track of how many times add/mul/div functions were called, and update a global dictionary variable with 
+    the counts (+ 6 tests) - 250
+
+4.  Modify above such that now we can pass in different dictionary variables to update different dictionaries 
+    (+ 6 tests) - 250
+
+5.  Once done, upload the code to Git Hub, run actions, and then proceed to answer S6 - Assignment QnA. 
+
+6.  No readme or no docstring for each function, or no test cases (4, 2, 6, 6, >7 = 25 tests), then 0. 
+    Write at least 7 test cases to check boundary conditions that might cause your code to fail. 
+    Scores = Total Tests * 5 + Total Cleared Tests * 5
+
+'''
+
+README_CONTENT_CHECK_FOR = [
+    "fibonacci",
+    "docstring",
+    "closure",
+    "count",
+    "decorator",
+
+]
 
 def test_readme_exists():
-    '''
-    Checks if readme exists
-    '''
-    assert os.path.isfile("README.md"), "README.md file doesn't exists"
+    assert os.path.isfile("README.md"), "README.md file missing!"
+
+def test_readme_contents():
+    readme = open("README.md", "r")
+    readme_words = readme.read().split()
+    readme.close()
+    assert len(readme_words) >= 250, "Make your README.md file interesting! Add atleast 500 words"
+
+def test_readme_proper_description():
+    READMELOOKSGOOD = True
+    f = open("README.md", "r", encoding="utf-8")
+    content = f.read()
+    f.close()
+    for c in README_CONTENT_CHECK_FOR:
+        if c not in content:
+            READMELOOKSGOOD = False
+            pass
+    assert READMELOOKSGOOD == True, "You have not described all the functions/class well in your README.md file"
+
+def test_readme_file_for_formatting():
+    f = open("README.md", "r", encoding="utf-8")
+    content = f.read()
+    f.close()
+    assert content.count("#") >= 10
+
+def test_indentations():
+    ''' Returns pass if used four spaces for each level of syntactically \
+    significant indenting.'''
+    lines = inspect.getsource(session6)
+    spaces = re.findall('\n +.', lines)
+    for space in spaces:
+        assert len(space) % 4 == 2, "Your script contains misplaced indentations"
+        assert len(re.sub(r'[^ ]', '', space)) % 4 == 0, "Your code indentation does not follow PEP8 guidelines"
+
+def test_function_name_had_cap_letter():
+    functions = inspect.getmembers(session6, inspect.isfunction)
+    for function in functions:
+        assert len(re.findall('([A-Z])', function[0])) == 0, "You have used Capital letter(s) in your function names"
+
+
+'''
+**********************************************************************************************************
+                                    DOCSTRING CHECKER TEST CASES
+**********************************************************************************************************
+'''
 
 def test_doc_strings_without_docstring():
     '''
@@ -29,7 +103,7 @@ def test_doc_string_check():
     '''
     Check if number of words in docstring is less than 50
     '''
-    with pytest.raises(SyntaxError, match=r".*minimum 50*"):
+    with pytest.raises(SyntaxError, match=r".*at least 50 words*"):
         def add(a, b):
             '''
             This function adds two numbers and returns sum
@@ -62,7 +136,7 @@ def test_doc_strings_without_letter():
     '''
     Check docstring contains only numbers
     '''
-    with pytest.raises(SyntaxError, match=r".*few charecter*"):
+    with pytest.raises(SyntaxError, match=r".*at least a few characters*"):
         def add_with_num_only_doc(a, b):
             '''
             0 1 2 3 4 5 6 7 8 9
@@ -75,6 +149,12 @@ def test_doc_strings_without_letter():
             return(a+b)
         fn_test = doc_string_check(add_with_num_only_doc)
         fn_test(2,3)
+
+'''
+**********************************************************************************************************
+                                FIBONACCI NUMBER GENERATOR TEST CASES
+**********************************************************************************************************
+'''
     
 def test_fib_closure_less_than_zero():
     '''
@@ -104,3 +184,51 @@ def test_fib_for_int_values():
 
     return_val = fn(10)
     assert return_val == 55, "Fibonacci series function is not working"
+
+'''
+**********************************************************************************************************
+                                    FUNCTION CALLED COUNT TEST CASES
+**********************************************************************************************************
+'''
+def test_fun_called_cnt_closure_add():
+    '''
+    Checks if the function called counting is working correctly
+    '''
+    @fun_called_cnt_closure
+    def add(a, b):
+        return(a+b)
+       
+    return_val = add(2, 3)
+    check_dictionary = {'add':1}
+    assert check_dictionary == return_val, "Function counting not working properly"
+
+def test_fun_called_cnt_closure_add_sub():
+    '''
+    Checks if the function called counting is working correctly
+    '''
+    @fun_called_cnt_closure
+    def add(a, b):
+        return(a+b)
+    
+    @fun_called_cnt_closure
+    def sub(a, b):
+        return(a-b)
+       
+    _ = add(2, 3)
+    return_val = sub(2, 3)
+    
+    check_dictionary = {'add':2, 'sub':1}
+    assert check_dictionary == return_val, "Function counting not working properly"
+
+def test_fun_called_cnt_closure_no_ags():
+    '''
+    Checks if the function called counting is working correctly
+    '''
+    @fun_called_cnt_closure
+    def random_fn():
+        pass
+    
+    return_val = random_fn()
+    
+    check_dictionary = {'add':2, 'sub':1, 'random_fn' : 1}
+    assert check_dictionary == return_val, "Function counting not working properly"
