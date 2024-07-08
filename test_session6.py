@@ -7,7 +7,7 @@ import re
 import math
 import time
 import session6
-from session6 import doc_string_check, fibonacci_closure, fun_called_cnt_closure
+from session6 import doc_string_check, fibonacci_closure, fun_called_cnt_closure, fun_called_cnt_closure_ext_dict, fn_called
 
 '''
     There is no separate assignment link. You need to write the code + test code, test your actions, and then 
@@ -33,25 +33,39 @@ from session6 import doc_string_check, fibonacci_closure, fun_called_cnt_closure
 
 '''
 
+'''
+**********************************************************************************************************
+                                        GENERIC TEST CASES
+**********************************************************************************************************
+'''
+
 README_CONTENT_CHECK_FOR = [
     "fibonacci",
     "docstring",
     "closure",
     "count",
-    "decorator",
-
-]
+    "decorator"
+    ]
 
 def test_readme_exists():
+    '''
+    To check if ReadMe exists
+    '''
     assert os.path.isfile("README.md"), "README.md file missing!"
 
 def test_readme_contents():
+    '''
+    To check if ReadMe includes important "Keywords"
+    '''
     readme = open("README.md", "r")
     readme_words = readme.read().split()
     readme.close()
     assert len(readme_words) >= 250, "Make your README.md file interesting! Add atleast 500 words"
 
 def test_readme_proper_description():
+    '''
+    To check if author has provided sufficient description
+    '''
     READMELOOKSGOOD = True
     f = open("README.md", "r", encoding="utf-8")
     content = f.read()
@@ -63,6 +77,9 @@ def test_readme_proper_description():
     assert READMELOOKSGOOD == True, "You have not described all the functions/class well in your README.md file"
 
 def test_readme_file_for_formatting():
+    '''
+    To check if author has used Markdown editing format or not
+    '''
     f = open("README.md", "r", encoding="utf-8")
     content = f.read()
     f.close()
@@ -78,6 +95,9 @@ def test_indentations():
         assert len(re.sub(r'[^ ]', '', space)) % 4 == 0, "Your code indentation does not follow PEP8 guidelines"
 
 def test_function_name_had_cap_letter():
+    '''
+    To check if function name contains any capital letter or camelcase
+    '''
     functions = inspect.getmembers(session6, inspect.isfunction)
     for function in functions:
         assert len(re.findall('([A-Z])', function[0])) == 0, "You have used Capital letter(s) in your function names"
@@ -202,9 +222,23 @@ def test_fun_called_cnt_closure_add():
     check_dictionary = {'add':1}
     assert check_dictionary == return_val, "Function counting not working properly"
 
-def test_fun_called_cnt_closure_add_sub():
+def test_fun_called_cnt_closure_add_twice():
     '''
     Checks if the function called counting is working correctly
+    '''
+    @fun_called_cnt_closure
+    def add(a, b):
+        return(a+b)
+       
+    _ = add(2, 3)
+    return_val = add(2, 3)
+    check_dictionary = {'add':3}
+    assert check_dictionary == return_val, "Function counting not working properly"
+
+def test_fun_called_cnt_closure_add_sub():
+    '''
+    Checks if the function called counting is working correctly by adding 
+    a new function
     '''
     @fun_called_cnt_closure
     def add(a, b):
@@ -217,18 +251,131 @@ def test_fun_called_cnt_closure_add_sub():
     _ = add(2, 3)
     return_val = sub(2, 3)
     
-    check_dictionary = {'add':2, 'sub':1}
+    check_dictionary = {'add':4, 'sub':1}
     assert check_dictionary == return_val, "Function counting not working properly"
 
 def test_fun_called_cnt_closure_no_ags():
     '''
     Checks if the function called counting is working correctly
+    by calling a function without arguments
     '''
     @fun_called_cnt_closure
     def random_fn():
         pass
-    
+
     return_val = random_fn()
     
-    check_dictionary = {'add':2, 'sub':1, 'random_fn' : 1}
+    check_dictionary = {'add':4, 'sub':1, 'random_fn' : 1}
     assert check_dictionary == return_val, "Function counting not working properly"
+
+def test_fun_called_cnt_closure_mem_clear():
+    '''
+    Checks if we can clear the count and restart the counting
+    '''
+    fn_called.clear()
+
+    @fun_called_cnt_closure
+    def add(a, b):
+        return(a+b)
+
+    @fun_called_cnt_closure
+    def sub(a, b):
+        return(a-b)
+
+    _ = add(2, 3)
+    return_val = sub(2, 3)
+    
+    check_dictionary = {'add':1, 'sub':1}
+    assert check_dictionary == return_val, "Function counting not working properly"
+
+'''
+**********************************************************************************************************
+                                FUNCTION CALLED COUNT TEST CASES - EXT DICT
+**********************************************************************************************************
+'''
+ext_dict = {}
+
+def test_fun_called_cnt_closure_ext_dict_add():
+    '''
+    Checks if the function called counting is working correctly
+    '''
+    global ext_dict
+    @fun_called_cnt_closure_ext_dict(ext_dict)
+    def add(a, b):
+        return(a+b)
+       
+    ext_dict = add(2, 3)
+    check_dictionary = {'add':1}
+    assert check_dictionary == ext_dict, "Function counting (external dict) not working properly"
+
+
+def test_fun_called_cnt_closure_ext_dict_twice():
+        '''
+        Checks if the function called counting is working correctly
+        '''
+        global ext_dict
+        @fun_called_cnt_closure_ext_dict(ext_dict)
+        def add(a, b):
+            return(a+b)
+        
+        _ = add(2, 3)
+        ext_dict = add(2, 3)
+        check_dictionary = {'add':3}
+        assert check_dictionary == ext_dict, "Function counting (external dict) not working properly"
+
+def test_fun_called_cnt_closure_ext_dict_sub():
+        '''
+        Checks if the function called counting is working correctly by adding 
+        a new function
+        '''
+        global ext_dict
+        @fun_called_cnt_closure_ext_dict(ext_dict)
+        def add(a, b):
+            return(a+b)
+        
+        @fun_called_cnt_closure_ext_dict(ext_dict)
+        def sub(a, b):
+            return(a-b)
+        
+        _ = add(2, 3)
+        ext_dict = sub(2, 3)
+        
+        check_dictionary = {'add':4, 'sub':1}
+        assert check_dictionary == ext_dict, "Function counting (external dict) not working properly"
+
+def test_fun_called_cnt_closure_ext_dict_no_ags():
+        '''
+        Checks if the function called counting is working correctly
+        by calling a function without arguments
+        '''
+        global ext_dict
+        @fun_called_cnt_closure_ext_dict(ext_dict)
+        def random_fn():
+            pass
+
+        return_val = random_fn()
+        
+        check_dictionary = {'add':4, 'sub':1, 'random_fn' : 1}
+        assert check_dictionary == ext_dict, "Function counting (external dict) not working properly"
+
+
+def test_fun_called_cnt_closure_ext_dict_mem_clear():
+        '''
+        Checks if we can clear the count and restart the counting
+        '''
+        global ext_dict
+        ext_dict.clear()
+
+        @fun_called_cnt_closure_ext_dict(ext_dict)
+        def add(a, b):
+            return(a+b)
+
+        @fun_called_cnt_closure_ext_dict(ext_dict)
+        def sub(a, b):
+            return(a-b)
+
+        _ = add(2, 3)
+        ext_dict = sub(2, 3)
+        
+        check_dictionary = {'add':1, 'sub':1}
+        assert check_dictionary == ext_dict, "Function counting not working properly"

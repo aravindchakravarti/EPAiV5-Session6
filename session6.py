@@ -103,28 +103,33 @@ def fun_called_cnt_closure(fn):
     return fn_counter
 
 
-def fun_called_cnt_closure_ext_dict(fn):
+def fun_called_cnt_closure_ext_dict(count_keep_dict: dict) -> dict:
     '''
     This function keeps count of how many times a function gets called.
     The difference with fun_called_cnt_closure() is that this closure
     requires an external dictionary 
     '''
-    def fn_counter(count_keep_dict: dict, *args: any, **kwargs: any) -> dict:
+    def inner_function(fn):
         '''
-        This function keeps count of how many times a function is called
+        The closure function which accepts the function input on which 
+        counter will be counted
         '''
-        # Fetch the name of function and check if already exists in dictionary
-        # if not create the key in the dictionary and initialize it to zero.
-        if fn.__name__ not in count_keep_dict:
-            count_keep_dict[fn.__name__] = 0
+        def fn_counter(*args: any, **kwargs: any) -> dict[str:int]:
+            '''
+            This function keeps count of how many times a function is called
+            '''
+            # Fetch the name of function and check if already exists in dictionary
+            # if not create the key in the dictionary and initialize it to zero.
+            if fn.__name__ not in count_keep_dict:
+                count_keep_dict[fn.__name__] = 0
 
-        # Update the count
-        count_keep_dict[fn.__name__] += 1
+            # Update the count
+            count_keep_dict[fn.__name__] += 1
 
-        # Return value, which is not used
-        _ = fn(*args, **kwargs)
+            # Return value, which is not used
+            _ = fn(*args, **kwargs)
 
-        # Return the dictionary
-        return count_keep_dict
-
-    return fn_counter
+            # Return the dictionary
+            return count_keep_dict
+        return fn_counter
+    return inner_function
